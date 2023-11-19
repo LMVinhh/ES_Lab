@@ -4,19 +4,19 @@
 cmake_minimum_required(VERSION 3.5)
 
 file(MAKE_DIRECTORY
-  "C:/Users/ASUS/esp/esp-idf/components/bootloader/subproject"
-  "C:/Users/ASUS/Documents/PlatformIO/Projects/ES_Lab3_Time_Slicing/build/bootloader"
-  "C:/Users/ASUS/Documents/PlatformIO/Projects/ES_Lab3_Time_Slicing/build/bootloader-prefix"
-  "C:/Users/ASUS/Documents/PlatformIO/Projects/ES_Lab3_Time_Slicing/build/bootloader-prefix/tmp"
-  "C:/Users/ASUS/Documents/PlatformIO/Projects/ES_Lab3_Time_Slicing/build/bootloader-prefix/src/bootloader-stamp"
-  "C:/Users/ASUS/Documents/PlatformIO/Projects/ES_Lab3_Time_Slicing/build/bootloader-prefix/src"
-  "C:/Users/ASUS/Documents/PlatformIO/Projects/ES_Lab3_Time_Slicing/build/bootloader-prefix/src/bootloader-stamp"
+  "D:/Users/ASUS/esp/esp-idf/components/bootloader/subproject"
+  "D:/PROJECT/Project_group/sample_project/build/bootloader"
+  "D:/PROJECT/Project_group/sample_project/build/bootloader-prefix"
+  "D:/PROJECT/Project_group/sample_project/build/bootloader-prefix/tmp"
+  "D:/PROJECT/Project_group/sample_project/build/bootloader-prefix/src/bootloader-stamp"
+  "D:/PROJECT/Project_group/sample_project/build/bootloader-prefix/src"
+  "D:/PROJECT/Project_group/sample_project/build/bootloader-prefix/src/bootloader-stamp"
 )
 
 set(configSubDirs )
 foreach(subDir IN LISTS configSubDirs)
-    file(MAKE_DIRECTORY "C:/Users/ASUS/Documents/PlatformIO/Projects/ES_Lab3_Time_Slicing/build/bootloader-prefix/src/bootloader-stamp/${subDir}")
+    file(MAKE_DIRECTORY "D:/PROJECT/Project_group/sample_project/build/bootloader-prefix/src/bootloader-stamp/${subDir}")
 endforeach()
 if(cfgdir)
-  file(MAKE_DIRECTORY "C:/Users/ASUS/Documents/PlatformIO/Projects/ES_Lab3_Time_Slicing/build/bootloader-prefix/src/bootloader-stamp${cfgdir}") # cfgdir has leading slash
+  file(MAKE_DIRECTORY "D:/PROJECT/Project_group/sample_project/build/bootloader-prefix/src/bootloader-stamp${cfgdir}") # cfgdir has leading slash
 endif()

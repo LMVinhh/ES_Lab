@@ -1,13 +1,13 @@
 # Target labels
  bootloader
 # Source files and their labels
-C:/Users/ASUS/Documents/PlatformIO/Projects/ES_Lab3_Time_Slicing/build/CMakeFiles/bootloader
-C:/Users/ASUS/Documents/PlatformIO/Projects/ES_Lab3_Time_Slicing/build/CMakeFiles/bootloader.rule
-C:/Users/ASUS/Documents/PlatformIO/Projects/ES_Lab3_Time_Slicing/build/CMakeFiles/bootloader-complete.rule
-C:/Users/ASUS/Documents/PlatformIO/Projects/ES_Lab3_Time_Slicing/build/bootloader-prefix/src/bootloader-stamp/bootloader-build.rule
-C:/Users/ASUS/Documents/PlatformIO/Projects/ES_Lab3_Time_Slicing/build/bootloader-prefix/src/bootloader-stamp/bootloader-configure.rule
-C:/Users/ASUS/Documents/PlatformIO/Projects/ES_Lab3_Time_Slicing/build/bootloader-prefix/src/bootloader-stamp/bootloader-download.rule
-C:/Users/ASUS/Documents/PlatformIO/Projects/ES_Lab3_Time_Slicing/build/bootloader-prefix/src/bootloader-stamp/bootloader-install.rule
-C:/Users/ASUS/Documents/PlatformIO/Projects/ES_Lab3_Time_Slicing/build/bootloader-prefix/src/bootloader-stamp/bootloader-mkdir.rule
-C:/Users/ASUS/Documents/PlatformIO/Projects/ES_Lab3_Time_Slicing/build/bootloader-prefix/src/bootloader-stamp/bootloader-patch.rule
-C:/Users/ASUS/Documents/PlatformIO/Projects/ES_Lab3_Time_Slicing/build/bootloader-prefix/src/bootloader-stamp/bootloader-update.rule
+D:/PROJECT/Project_group/sample_project/build/CMakeFiles/bootloader
+D:/PROJECT/Project_group/sample_project/build/CMakeFiles/bootloader.rule
+D:/PROJECT/Project_group/sample_project/build/CMakeFiles/bootloader-complete.rule
+D:/PROJECT/Project_group/sample_project/build/bootloader-prefix/src/bootloader-stamp/bootloader-build.rule
+D:/PROJECT/Project_group/sample_project/build/bootloader-prefix/src/bootloader-stamp/bootloader-configure.rule
+D:/PROJECT/Project_group/sample_project/build/bootloader-prefix/src/bootloader-stamp/bootloader-download.rule
+D:/PROJECT/Project_group/sample_project/build/bootloader-prefix/src/bootloader-stamp/bootloader-install.rule
+D:/PROJECT/Project_group/sample_project/build/bootloader-prefix/src/bootloader-stamp/bootloader-mkdir.rule
+D:/PROJECT/Project_group/sample_project/build/bootloader-prefix/src/bootloader-stamp/bootloader-patch.rule
+D:/PROJECT/Project_group/sample_project/build/bootloader-prefix/src/bootloader-stamp/bootloader-update.rule

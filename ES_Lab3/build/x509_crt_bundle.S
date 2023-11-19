@@ -1,4 +1,4 @@
-/* * Data converted from C:/Users/ASUS/Documents/PlatformIO/Projects/ES_Lab3_Time_Slicing/build/esp-idf/mbedtls/x509_crt_bundle
+/* * Data converted from D:/PROJECT/Project_group/sample_project/build/esp-idf/mbedtls/x509_crt_bundle
  */
 .data
 .section .rodata.embedded
