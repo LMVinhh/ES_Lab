@@ -13,131 +13,171 @@
 #include "freertos/semphr.h"
 
 // Global variable for idle task tick of each core
-volatile uint64_t idleTicksCore0 = 0UL;
-volatile uint64_t idleTicksCore1 = 0UL;
+// Variables to store idle task statistics
+static TickType_t idleTimeCore0 = 0;
+static TickType_t idleTimeCore1 = 0;
 
 // Time period over which to calculate CPU utilization.
-#define MONITOR_PERIOD_TASK1 (2000 / portTICK_PERIOD_MS) // Translated to ticks
+#define MONITOR_PERIOD_TASK1 (6000 / portTICK_PERIOD_MS) // Translated to ticks
 #define MONITOR_PERIOD_TASK2 (2000 / portTICK_PERIOD_MS) // Translated to ticks
+#define MONITOR_PERIOD_TASK_MONITOR (2000 / portTICK_PERIOD_MS) // Translated to ticks
+
 TaskHandle_t task1Handle, task2Handle,IDLEhandle;
+ #if defined(SCHEDULING_MODE_TIME_SLICING)
 
 void vTask1(void *pvParameter) 
 {
+            
+
     while(1) 
     {
         printf("vTask1 is running on core: %d\n", xPortGetCoreID());
-        #ifdef SCHEDULING_MODE_CO_OP
-        taskYIELD();  // to give other task opportunity to enter running state
-        #endif
-        //for (int i = 0; i < 2000000; i++);
-        xTaskNotifyGive(task2Handle);
-        ulTaskNotifyTake(pdTRUE, MONITOR_PERIOD_TASK1);
+        
 
         vTaskDelay(MONITOR_PERIOD_TASK1); 
     }
 }
+    #elif  defined(SCHEDULING_MODE_CO_OP)
+
+SemaphoreHandle_t semaphore;
+void vTask1(void *pvParameter) 
+{
+    int count = 0;
+
+    // Wait for the semaphore to be released
+    xSemaphoreTake(semaphore, portMAX_DELAY);
+
+    while(1) 
+    {
+        printf("vTask1 is running on core: %d and called %d time\n", xPortGetCoreID(), ++count);
+        vTaskDelay((2000 / portTICK_PERIOD_MS));
+    }
+}
+        #endif
+
+ #if defined(SCHEDULING_MODE_TIME_SLICING)
 
 void vTask2(void *pvParameter) 
 {
+    int count = 0;
     while(1) 
     {
-        printf("vTask2 is running on core: %d\n", xPortGetCoreID());
-        #ifdef SCHEDULING_MODE_CO_OP
-        taskYIELD();  // to give other task opportunity to enter running state
-        #endif
+        printf("vTask2 is running on core: %d and %d\n", xPortGetCoreID(),++count);
+       
         //for (int i = 0; i < 1000000; i++);
-        ulTaskNotifyTake(pdTRUE, MONITOR_PERIOD_TASK2);
-        vTaskDelay(MONITOR_PERIOD_TASK2);  
+        //vTaskDelay(MONITOR_PERIOD_TASK2);  
+        
     }
 }
-// void Task1(void* pvParameters) {
-//     // Wait for notification from Task 2
-//     ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
+    #elif  defined(SCHEDULING_MODE_CO_OP)
 
-//     // Task 1 code here
-// }
+void vTask2(void *pvParameter) 
+{
+    int count = 0;
 
-// void Task2(void* pvParameters) {
-//     // Task 2 code here
+    // Wait for the semaphore to be released
+    xSemaphoreTake(semaphore, portMAX_DELAY);
 
-//     // Notify Task 1
-//     vTaskNotifyGive(Task1Handle);
+    while(1) 
+    {
+        printf("vTask2 is running on core: %d and called %d time\n", xPortGetCoreID(), ++count);
+                vTaskDelay((1000 / portTICK_PERIOD_MS));
 
-//     // Task 2 continues its execution
-// }
+    }
+}
+    #endif
+
+ #if defined(SCHEDULING_MODE_TIME_SLICING)
+
 void vIDLE(void *pvParameter) 
 {
+    int count = 0;
+
     while(1) 
     {
-        printf("This is IDLE task in  %d\n", xPortGetCoreID());
-        #ifdef SCHEDULING_MODE_CO_OP
-        taskYIELD();  // to give other task opportunity to enter running state
-        #endif
-        xTaskNotifyGive(task1Handle);
-
-        //for (int i = 0; i < 1000000; i++);
-        idleTicksCore0++;
-         idleTicksCore1++;
-        vTaskDelay(1000 / portTICK_PERIOD_MS);  
+        printf("IDLE is running on core: %d and %d\n", xPortGetCoreID(),++count);
     }
 }
-void vApplicationIdleHook()
+
+    #elif  defined(SCHEDULING_MODE_CO_OP)
+
+void vIDLE(void *pvParameter) 
 {
-    if (xPortGetCoreID() == 0) {
-        idleTicksCore0++;
-    } else {
-        idleTicksCore1++;
+    int count = 0;
+
+    while(1) 
+    {
+        printf("IDLE is running on core: %d and %d\n", xPortGetCoreID(), ++count);
+
+        if (count == 1) {
+            // Release the semaphore to unblock Task 1, Task 2, and Task 3
+            xSemaphoreGive(semaphore);
+        }
+
+        // Perform cooperative scheduling
+        if(count == 1400){
+            printf("IDLE Yield!!!!!!!!!\n");
+
+        taskYIELD();
+        count = 0;}
     }
 }
+    #endif
 
-static void vMonitorTask1(void* arg) {
-    while (1) {
-        // Sleep for the monitor period
-        vTaskDelay(MONITOR_PERIOD_TASK1);
-        printf("this idleTicksCore0 have value :%lld\n", idleTicksCore0);
-        // Calculate the CPU utilization
-        float cpu0Utilization = 100.0 - (idleTicksCore0 * 100.0 / MONITOR_PERIOD_TASK1);
+void vApplicationIdleHook(void) {
+  // Get the current tick count
+  TickType_t currentTickCount = xTaskGetTickCount();
 
-        // Log the CPU utilization
-        printf("CPU0 Utilization: %.2f%%\n", cpu0Utilization);
+  // Determine the core on which the idle task is running
+  BaseType_t coreId = xPortGetCoreID();
 
-        // Update our last tick counts for the next cycle
-        idleTicksCore0 = 0;
-    }
+  // Update the idle time based on the core
+  if (coreId == 0) {
+    idleTimeCore0 = currentTickCount;
+  } else if (coreId == 1) {
+    idleTimeCore1 = currentTickCount;
+  }
 }
 
-static void vMonitorTask2(void* arg) {
-    while (1) {
-        // Sleep for the monitor period
-        vTaskDelay(MONITOR_PERIOD_TASK2);
-        printf("this idleTicksCore1 have value :%lld\n", idleTicksCore1);
+static void vMonitorTask(void* arg) {
+     TickType_t totalIdleTime = idleTimeCore0 + idleTimeCore1;
+    TickType_t totalRunTime = xTaskGetTickCount();
+    float cpuUtilization = (float)(totalRunTime - totalIdleTime) / totalRunTime * 100.0;
 
-        // Calculate the CPU utilization
-        float cpu1Utilization = 100.0 - (idleTicksCore1 * 100.0 / MONITOR_PERIOD_TASK2);
 
-        // Log the CPU utilization
-        printf("CPU1 Utilization: %.2f%%\n", cpu1Utilization);
+    // Print CPU utilization
 
-        // Update our last tick counts for the next cycle
-        idleTicksCore1 = 0;
-    }
+    printf("================================>Total CPU Utilization: %.2f%%\n", cpuUtilization);
+
+    vTaskDelay(2000 / portTICK_PERIOD_MS);
 }
+
+
 
 void app_main(void) 
 {
+
+    vApplicationIdleHook();
+
     #if defined(SCHEDULING_MODE_TIME_SLICING)
-    xTaskCreatePinnedToCore(vTask1, "Task1", 2048, &task1Handle, 1, NULL);
-    xTaskCreatePinnedToCore(vTask2, "Task2", 2048, &task2Handle, 1, NULL);
+    xTaskCreate(vTask1, "Task1", 2048, NULL, 1, &task1Handle);
+    xTaskCreate(vTask2, "Task2", 2048, NULL, tskIDLE_PRIORITY, &task2Handle);
+    xTaskCreate(vIDLE, "IDLE", 2048, NULL, tskIDLE_PRIORITY, &IDLEhandle);  // Lower priority
+
     #elif  defined(SCHEDULING_MODE_CO_OP)
-    xTaskCreatePinnedToCore(vTask1, "Task1", 2048, NULL, 1, &task1Handle, 0);  // Higher priority
-    xTaskCreatePinnedToCore(vTask2, "Task2", 2048, NULL, 2, &task2Handle, 1);  // Lower priority
-    xTaskCreatePinnedToCore(vIDLE, "IDLE", 2048, NULL, tskIDLE_PRIORITY, &IDLEhandle, 1);  // Lower priority
-    xTaskCreatePinnedToCore(vIDLE, "IDLE", 2048, NULL, tskIDLE_PRIORITY, &IDLEhandle, 0);  // Lower priority
+    // Create a binary semaphore
+    semaphore = xSemaphoreCreateBinary();
+
+    // Create Task 1, Task 2, and Task 3
+    xTaskCreate(vTask1, "Task1", 2048, NULL, 1, &task1Handle);
+    xTaskCreate(vTask2, "Task2", 2048, NULL, 2, &task2Handle);
+
+    // Create the IDLE task
+    xTaskCreate(vIDLE, "IDLE", 2048, NULL, tskIDLE_PRIORITY, &IDLEhandle);
 
 
     #endif
 
     // Extra exercise
-    xTaskCreate(vMonitorTask1, "Monitor Core0 usage", 4096, &task1Handle, 0, NULL);
-    xTaskCreate(vMonitorTask2, "Monitor Core1 usage", 4096, &task2Handle, 1, NULL);
+    //xTaskCreate(vMonitorTask, "Monitor Core0 usage", 4096, NULL, tskIDLE_PRIORITY, &IDLEhandle);
 }
