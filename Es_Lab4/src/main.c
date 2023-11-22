@@ -6,15 +6,13 @@
 #include "freertos/task.h"
 #include "freertos/queue.h"
 
-xQueueHandle qHandler;
+QueueHandle_t qHandler;
 typedef struct
 {
-    int eDataID; // ID task
-    int lDataValue; // Gia trị mà task đó nhận
+    int eDataID;
+    int lDataValue;
 } Data_t;
 
-// Hàm nhận task theo ID và data 
-// Id của mỗi task sẽ setup theo ngẫu nhiên từ 1 - 3 do chỉ có 3 task
 void reception(void *pvParameter)
 {
     Data_t requestPtr;
@@ -25,8 +23,8 @@ void reception(void *pvParameter)
         requestPtr.eDataID = (rand() % 3) + 1;
         requestPtr.lDataValue = data;
         data++;
-        xQueueSendToBack(qHandler, &requestPtr, portMAX_DELAY);
-        printf("Receiving task with ID : %d, Data: %d into the last position of the Queue.\n", requestPtr.eDataID, requestPtr.lDataValue);
+        xQueueSend(qHandler, &requestPtr, portMAX_DELAY);
+        printf("Send task with ID: %d, Data: %d into queue.\n", requestPtr.eDataID, requestPtr.lDataValue);
         vTaskDelay(pdMS_TO_TICKS(500));
     }
 }
@@ -64,8 +62,7 @@ void func_2(Data_t request)
 
     return;
 }
-// Chạy tuần tự từng function, nếu id không khớp sẽ báo error sẽ gọi function 2 và tương tự, đến khi nào đến function 3 
-// khi đến function mà không thỏa id sẽ ignore data đó
+
 void func_1(void *pvParameter)
 {
 
