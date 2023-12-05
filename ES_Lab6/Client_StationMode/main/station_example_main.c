@@ -183,7 +183,7 @@ void tcp_client_task(void *pvParameters)
     ESP_LOGI(TAG, "Connected to server");
 
     // Send "Hello, World!" to the server
-    const char *message = "Hello, World!";
+    const char *message = "Hello server from client station mode !!";
     send(sock, message, strlen(message), 0);
 
     while (1) {
