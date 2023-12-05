@@ -147,7 +147,7 @@ void tcp_server_task(void *pvParameters)
             ESP_LOGI(TAG, "Received: %s", buffer);
 
             // Send "Hello, World!" back to the client
-            const char *message = "Hello, World!";
+            const char *message = "Hello client from Server APmode !!";
             send(client_sock, message, strlen(message), 0);
         }
     }
